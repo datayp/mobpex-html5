@@ -1,9 +1,8 @@
 function loadOrder(param, callback) {
-	initPage(param);
-	// document.getElementById("orderPay").innerHTML = bodyHtml;
-	buttonObj = document.getElementsByTagName("button");
-	for (var i = 0; i < buttonObj.length; i++) {
-		buttonObj[i].onclick = function() {
+	//initPage(param);
+	imgObj = document.getElementsByTagName("img");
+	for (var i = 0; i < imgObj.length; i++) {
+		imgObj[i].onclick = function() {
 			
 			//记录用户选择的支付渠道和支付类型
 			param.payChannel = this.getAttribute("data-value");
@@ -21,10 +20,7 @@ function initPage(param) {
 			channelHtml = channelHtml
 					+ '<button class="btn btn-default" type="button" data-value="ALIPAY" payType="'+param.channel[i].payType+'" ><i class="iconfont alipay">&#xe61e;</i>支付宝</button>';
 		}
-		if (param.channel[i].payChannel == "WECHAT") {
-			channelHtml = channelHtml
-					+ '<button class="btn btn-default" type="button" data-value="WECHAT" payType="'+param.channel[i].payType+'" ><i class="iconfont weipay">&#xe61d;</i>微信支付</button>';
-		}
+		
 		if (param.channel[i].payChannel == "YEEPAY") {
 			channelHtml = channelHtml
 					+ '<button class="btn btn-default" type="button" data-value="YEEPAY" payType="'+param.channel[i].payType+'"><i class="iconfont yeepay">&#xe61b;</i>易宝支付</button>';
@@ -74,6 +70,9 @@ function submitPay(orderJson) {
 	xhr.setRequestHeader("Content-type",
 			"application/x-www-form-urlencoded;charset=utf-8");
 	xhr.send(postBody);
+	
+	//2016-07-04 某些浏览器有安全机制，会阻止在回调函数里使用window.open，为了绕开此机制，先打开一个空窗口，之后再在回调函数里设置它的location
+	var winRef = window.open("", "_blank");
 
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
@@ -92,7 +91,17 @@ function submitPay(orderJson) {
 				return;
 			} else {
 				
-				mobpexJsSdk.letsPay(xhr.responseText, successCallBack,errorCallBack);
+				mobpexJsSdk.letsPay(xhr.responseText, successCallBack2,errorCallBack,winRef);
+				//在新窗口打开某个支付方式的页面后，在本页面弹出弹出框，带有支付成功按钮和选择其他支付方式按钮
+			  var opr={
+			    title:'支付结果',
+			    yesBtn:"支付成功",
+			    noBtn:"重新选择支付方式",
+			    ok:function(){
+			      console.log(222);
+			    }
+			   };
+			   dialog(opr);
 				endWait();// 关闭等待UI的显示
 			}
 		} else if (xhr.readyState == 4) {
@@ -103,7 +112,7 @@ function submitPay(orderJson) {
 			errorCallBack("获取支付凭证失败!");
 			return;
 		}
-	}
+	};
 }
 function validateOrderJson(orderJson) {
 	var orderJsonObject = {};
@@ -112,8 +121,7 @@ function validateOrderJson(orderJson) {
 			orderJsonObject = JSON.parse(orderJson);
 		} catch (err) {
 			errorCallBack("fail", this._error("json_string_not_valid"));
-			return;
-			false;
+			return false;
 		}
 	} else {
 		orderJsonObject = orderJson;
@@ -147,14 +155,15 @@ function validateOrderJson(orderJson) {
  * @param msg
  * @param ext
  */
-function successCallBack(msg, ext) {
+function successCallBack2(msg, ext) {
 	 
 	console.log(msg);
 	if (ext != undefined) {
 		console.log(ext);
 	}
 	
-	alert(msg);
+	//alert(msg);
+	window.location.href = "../cashier/cashier-payok.html";
 }
 
 /**

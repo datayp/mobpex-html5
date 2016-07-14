@@ -108,7 +108,7 @@ MobpexJsSDK.prototype = {
 	  
       return true;
   },
-  letsPay: function(prePay_json,successCallBack,errorCallBack) {
+  letsPay: function(prePay_json,successCallBack,errorCallBack,winRef) {
 	  this._errorCallback=errorCallBack;
 	  this._successCallback=successCallBack
     var paymentsJson;
@@ -142,7 +142,10 @@ MobpexJsSDK.prototype = {
     }
     else  {  
     	console.log(result.paymentParams.transUrl);
-    	window.location=result.paymentParams.transUrl;
+    	//window.location=result.paymentParams.transUrl;
+    	//window.open(result.paymentParams.transUrl,"_blank");
+    	//2016-07-04 某些浏览器有安全机制，会阻止在回调函数里使用window.open，为了绕开此机制，先打开一个空窗口，之后再在回调函数里设置它的location
+    	winRef.location = result.paymentParams.transUrl;
       return;
     }
     
@@ -169,7 +172,7 @@ MobpexJsSDK.prototype = {
           if(res.err_msg == 'get_brand_wcpay_request:ok'){
              self._successCallback("success",prePay_json);
           }else if(res.err_msg == 'get_brand_wcpay_request:cancel'){
-            self._errorCallback("cancel");
+            //self._errorCallback("cancel");
           }else{
             self._errorCallback("fail", res.err_msg);
           }
