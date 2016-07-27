@@ -3,37 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mobpex</title>
-<link rel="stylesheet" type="text/css" href="../styles/public.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MobPex支付体验</title>
+<link rel="stylesheet" type="text/css" href="../styles/public2.css">
 </head>
+
 <body>
-	<section>
-		<div class="content">
-			<h3>
-				<i class="iconfont success">&#xe616;</i>下单成功
-			</h3>
-			<div class="order-line">
-				<label>订单号</label>
-				<div class="value" id="orderNumber"></div>
-			</div>
-			<div class="order-line">
-				<label>总金额</label>
-				<div class="value" id="amount">￥</div>
-			</div>
-			<div class="order-line">
-				<label>收款方</label>
-				<div class="value" id="payee"></div>
-			</div>
-		</div>
-	</section>
-	<footer>
-		<div class="pay-channel" id="channelList">
-			<h4>支付渠道列表</h4>
-		</div>
-	</footer>
-</body>
+
+
+  <form >
+<section>
+  <header class="header">
+    <img alt="mobpex支付" src="../images/logo.jpg">
+    <p><span>让</span><span>支</span><span>付</span><span>更</span><span>便</span><span>捷</p>
+    </header>
+  <div class="content">
+
+  <!--   <h3><i class="iconfont success"></i>下单成功</h3> -->
+  <div class="pay-panel">
+    <div class="order-line">
+      <label>商品名称</label><div class="value" id="orderNumber">Mobpex支付体验</div>
+    </div>
+    <div class="order-line">
+      <label>金&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;额</label><div class="value"><span>￥</span>0.01</div>
+    </div>
+</div>
+  <button type="button" class="btn" id="paynow">立即支付</button>
+   
+  </div>
+
+</section>
+ </form>
+<footer>
+  <div class="pay-channel">
+    <button class="btn btn-default" type="button" data-value="ALIPAY" payType="WAP"><i class="iconfont alipay">&#xe600;</i>支付宝&nbsp;&nbsp;&nbsp;&nbsp;</button>
+    <button class="btn btn-default wechat" type="button" data-value="WECHAT" payType="PUB"><i class="iconfont weipay">&#xe603;</i>微信支付</button>
+    <button class="btn btn-default" type="button" data-value="YEEPAY" payType="WAP"><i class="iconfont yeepay">&#xe602;</i>易宝支付</button>
+    <button class="btn btn-default" type="button" data-value="UPACP" payType="WAP"><img alt="银联支付" src="../images/yinliang.jpg" class="yinliang">银联支付</button>
+  </div>
+</footer>
+<div class="modelback"></div>
+<script type="text/javascript" src="../script/demo.js"></script>
 <script type="text/javascript" src="../script/mobpex-js-sdk.js"></script>
 <script type="text/javascript" src="../script/your-js.js"></script>
 <script type="text/javascript" src="../script/ap.js"></script>
@@ -45,14 +55,13 @@
 			"productDescription" : "商品描述",//商品描述
 			"amount" : "0.01",//商品金额
 			"payee" : "湖南易宝天创数据服务有限公司",//收款方 
-			"submitPayUrl" : "../demo/submitOrder"//提交订单url        
+			"submitPayUrl" : "https://220.181.25.235/mashup-demo/demo/submitOrder"//提交订单url        
 		},
 		"channel" : [ {"payChannel":"ALIPAY","payType":"WAP"}, {"payChannel":"YEEPAY","payType":"WAP"} , {"payChannel":"UPACP","payType":"WAP"}  , {"payChannel":"WECHAT","payType":"PUB"} ],
-		"merchantUrl" : "https://www.mobpex.com"//商户url
+		"merchantUrl" : "https://www.mobpex.com"   //商户url
 	};
-	window.onload = function() {
-		loadOrder(initParam, submitPay);
-	};
+	
      
 </script>
+</body>
 </html>

@@ -20,7 +20,7 @@ MobpexJsSDK.prototype = {
 
   _errorCallback: undefined,
   _successCallback: undefined,
-  _validatePrePayJson:function(prePayJson){
+  _validatePrePayJson:function(prePayJson){	
 	  var prePayJsonObj = {};
 	  if(typeof prePayJson == "string"){
 	      try{
@@ -132,16 +132,15 @@ MobpexJsSDK.prototype = {
     var result = paymentsJson['result'];
     
     if (channel==channels.alipay  && this._is_weixin()) {  
-    	console.log(result.paymentParams.transUrl);
+    	//console.log(result.paymentParams.transUrl);
     	_AP.pay(result.paymentParams.transUrl);
       return;
     }else  if (channel==channels.wechat){
-    	    	console.log(paymentsJson);
     	    	this._wechatPayInWechat(paymentsJson);
     	      return;
     }
     else  {  
-    	console.log(result.paymentParams.transUrl);
+    	//console.log(result.paymentParams.transUrl);
     	window.location=result.paymentParams.transUrl;
       return;
     }
@@ -169,7 +168,7 @@ MobpexJsSDK.prototype = {
           if(res.err_msg == 'get_brand_wcpay_request:ok'){
              self._successCallback("success",prePay_json);
           }else if(res.err_msg == 'get_brand_wcpay_request:cancel'){
-            self._errorCallback("cancel");
+            //self._errorCallback("cancel");
           }else{
             self._errorCallback("fail", res.err_msg);
           }
