@@ -1,44 +1,69 @@
+window.onload=function(){
+  var paynow = document.getElementById("paynow"),
+      payChannel = document.querySelector(".pay-channel"),
+      modelback = document.querySelector(".modelback");
+      //wechat = payChannel.querySelector(".wechat");
+  loadOrder(initParam, submitPay);
+
+  EventUtil.addHandler(paynow,"click",function(event){//选择其它方式支付
+    event=EventUtil.getEvent(event);//获取事件对象
+    var target = EventUtil.getTarget(event);//获取事件对象目标
+    modelback.style.display="block";
+    payChannel.style.display="block";
+   
+  });
+  
+  EventUtil.addHandler(modelback,"click",function(event){//点击黑色背景
+    event=EventUtil.getEvent(event);//获取事件对象
+    var target = EventUtil.getTarget(event);//获取事件对象目标
+    payChannel.style.display="none";
+    modelback.style.display="none"; 
+  }); 
+  
+};
 function loadOrder(param, callback) {
 	initPage(param);
-	// document.getElementById("orderPay").innerHTML = bodyHtml;
 	buttonObj = document.getElementsByTagName("button");
 	for (var i = 0; i < buttonObj.length; i++) {
-		buttonObj[i].onclick = function() {
+		if(buttonObj[i].getAttribute("payType")!=undefined){
 			
+			
+			buttonObj[i].onclick = function() {
 			//记录用户选择的支付渠道和支付类型
-			param.payChannel = this.getAttribute("data-value");
-			param.payType = this.getAttribute("payType");
-			callback(param);
+				param.payChannel = this.getAttribute("data-value");
+				param.payType = this.getAttribute("payType");
+				callback(param);
 
-		};
+			};
+	   }
 	}
 }
 function initPage(param) {
-	channelHtml = "";
-	channelHtml += "<h4>选择付款方式</h4>";
+	channelHtml = ""; 
 	for (var i = 0; i < param.channel.length; i++) {
-		if (param.channel[i].payChannel == "ALIPAY") {
-			channelHtml = channelHtml
-					+ '<button class="btn btn-default" type="button" data-value="ALIPAY" payType="'+param.channel[i].payType+'" ><i class="iconfont alipay">&#xe61e;</i>支付宝</button>';
+		if(param.channel[i].payChannel=='WECHAT')
+		{
+			if(!isWeiXin()){
+		         continue;
+		     }
 		}
-		if (param.channel[i].payChannel == "WECHAT") {
-			channelHtml = channelHtml
-					+ '<button class="btn btn-default" type="button" data-value="WECHAT" payType="'+param.channel[i].payType+'" ><i class="iconfont weipay">&#xe61d;</i>微信支付</button>';
-		}
-		if (param.channel[i].payChannel == "YEEPAY") {
-			channelHtml = channelHtml
-					+ '<button class="btn btn-default" type="button" data-value="YEEPAY" payType="'+param.channel[i].payType+'"><i class="iconfont yeepay">&#xe61b;</i>易宝支付</button>';
-		}
-		if (param.channel[i].payChannel == "UPACP") {
-			channelHtml = channelHtml
-					+ '<button class="btn btn-default" type="button" data-value="UPACP" payType="'+param.channel[i].payType+'"><img alt="银联支付" src="../images/yinliang.jpg" class="yinliang">银联支付</button>';
+		else{
+		channelHtml = channelHtml
+					
+					+ '<button class="btn btn-default" type="button" data-value="'
+					+param.channel[i].payChannel
+					+'" payType="'+param.channel[i].payType
+					+'" >'
+					+ '<img  src="'+param.channel[i].logo+'" class="yinliang">'
+					+param.channel[i].channelName+'</button>';
+		//<button class="btn btn-default" type="button" data-value="ALIPAY" payType="WAP"><i class="iconfont alipay">&#xe600;</i>支付宝&nbsp;&nbsp;&nbsp;&nbsp;</button>
 		}
 	}
-	document.getElementById("channelList").innerHTML = channelHtml;
-	document.getElementById("orderNumber").innerHTML = param.orderInfo.orderNo;
-	document.getElementById("amount").innerHTML = "￥" + param.orderInfo.amount
-			+ "元";
-	document.getElementById("payee").innerHTML = param.orderInfo.payee;
+	document.getElementById("channels").innerHTML = channelHtml;
+	document.getElementById("productName").innerHTML = param.orderInfo.productName;
+	
+	document.getElementById("amount").innerHTML = "<span>￥</span>"+param.orderInfo.amount ;
+	//document.getElementById("payee").innerHTML = param.orderInfo.payee;
 
 }
 function submitPay(orderJson) {
@@ -48,7 +73,6 @@ function submitPay(orderJson) {
 		try {
 			orderJsonObject = JSON.parse(orderJson);// 解悉提交支付的JSON参数串
 		} catch (err) {
-			console.log(orderJson);
 			endWait();// 关闭等待UI的显示
 			errorCallBack("发起支付失败!", "initParam为非法JSON串");
 			return;
@@ -79,8 +103,6 @@ function submitPay(orderJson) {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 			var prePayJsonObject = JSON.parse(xhr.responseText);
 			if (prePayJsonObject.state != 'SUCCESS') {
-				console.log(submitPayUrl);
-				console.log(xhr.responseText);
 				if (hasProperty.call(prePayJsonObject, "error")
 						&& hasProperty.call(prePayJsonObject.error, "code")) {
 					endWait();// 关闭等待UI的显示
@@ -96,14 +118,11 @@ function submitPay(orderJson) {
 				endWait();// 关闭等待UI的显示
 			}
 		} else if (xhr.readyState == 4) {
-			console.log(submitPayUrl);
-			console.log(xhr.status);
-			console.log(xhr.responseText);
 			endWait();// 关闭等待UI的显示
 			errorCallBack("获取支付凭证失败!");
 			return;
 		}
-	}
+	};
 }
 function validateOrderJson(orderJson) {
 	var orderJsonObject = {};
@@ -112,8 +131,7 @@ function validateOrderJson(orderJson) {
 			orderJsonObject = JSON.parse(orderJson);
 		} catch (err) {
 			errorCallBack("fail", this._error("json_string_not_valid"));
-			return;
-			false;
+			return false;
 		}
 	} else {
 		orderJsonObject = orderJson;
@@ -148,13 +166,8 @@ function validateOrderJson(orderJson) {
  * @param ext
  */
 function successCallBack(msg, ext) {
-	 
-	console.log(msg);
-	if (ext != undefined) {
-		console.log(ext);
-	}
-	
-	alert(msg);
+	//alert(msg);
+	window.location.href = "../page/payOk.html";
 }
 
 /**
@@ -164,10 +177,6 @@ function successCallBack(msg, ext) {
  */
 function errorCallBack(msg, ext) {
 
-	console.log(msg);
-	if (ext != undefined) {
-		console.log(ext);
-	}
 	alert(msg);
 }
 
