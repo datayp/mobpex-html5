@@ -41,13 +41,6 @@ function loadOrder(param, callback) {
 function initPage(param) {
 	channelHtml = ""; 
 	for (var i = 0; i < param.channel.length; i++) {
-		if(param.channel[i].payChannel=='WECHAT')
-		{
-			if(!isWeiXin()){
-		         continue;
-		     }
-		}
-		else{
 		channelHtml = channelHtml
 					
 					+ '<button class="btn btn-default" type="button" data-value="'
@@ -57,7 +50,7 @@ function initPage(param) {
 					+ '<img  src="'+param.channel[i].logo+'" class="yinliang">'
 					+param.channel[i].channelName+'</button>';
 		//<button class="btn btn-default" type="button" data-value="ALIPAY" payType="WAP"><i class="iconfont alipay">&#xe600;</i>支付宝&nbsp;&nbsp;&nbsp;&nbsp;</button>
-		}
+		
 	}
 	document.getElementById("channels").innerHTML = channelHtml;
 	document.getElementById("productName").innerHTML = param.orderInfo.productName;

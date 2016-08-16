@@ -57,7 +57,7 @@ var EventUtil={//
 //-------------------------------------------------------------------------------------------------------------------
 function isWeiXin(){ 
   var ua = window.navigator.userAgent.toLowerCase(); 
-  if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
+  if(ua.match(/micromessenger/i) == 'micromessenger'){ 
     return true; 
   }else{ 
     return false; 
